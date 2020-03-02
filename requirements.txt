@@ -1,0 +1,4 @@
+numpy>=1.18
+requests
+torch==1.4
+torchtext
