@@ -6,12 +6,10 @@ from torchtext.datasets import text_classification
 from torchtext.vocab import build_vocab_from_iterator
 import os
 NGRAMS = 2
-PATH_OUTPUT = 'output/'
-
 
 # parse and save dataset
-def prepare_dataset(ngrams=1):
-    extracted_dir = '/home/rajannaa/pytorch-demo/data/dbpedia_csv/';
+def prepare_dataset(ngrams):
+    extracted_dir = './data/';
 
     vocab = None
     train_csv_path = os.path.join(extracted_dir, 'train.csv')
@@ -36,10 +34,7 @@ def prepare_dataset(ngrams=1):
     train_dataset = text_classification.TextClassificationDataset(vocab, train_data, train_labels)
     test_dataset = text_classification.TextClassificationDataset(vocab, test_data, test_labels)
  
-    pickle.dump(train_dataset, open(os.path.join(PATH_OUTPUT, "train_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
-    pickle.dump(test_dataset, open(os.path.join(PATH_OUTPUT, "test_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
+    pickle.dump(train_dataset, open(os.path.join("data/", "train_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
+    pickle.dump(test_dataset, open(os.path.join("data/", "test_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
 
-
-   
-BATCH_SIZE = 16
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+prepare_dataset(NGRAMS)

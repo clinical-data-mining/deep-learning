@@ -8,29 +8,25 @@ import torch.nn.functional as F
 import time
 from torch.utils.data.dataset import random_split
 from torch.utils.data import DataLoader
+from model import TextSentiment
 
-NGRAMS = 2
-train_dataset = pickle.load(open(os.path.join("/home/rosed2/output", "train_dataset"), 'rb'))
-test_dataset = pickle.load(open(os.path.join("/home/rosed2/output", "test_dataset"), 'rb'))
+train_dataset = pickle.load(open(os.path.join("./data", "train_dataset"), 'rb'))
+test_dataset = pickle.load(open(os.path.join("./data", "test_dataset"), 'rb'))
+
 BATCH_SIZE = 16
+N_EPOCHS = 5
+VOCAB_SIZE = len(train_dataset.get_vocab())
+EMBED_DIM = 32
+NUM_CLASS = len(train_dataset.get_labels())
+
+min_valid_loss = float('inf')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = TextSentiment(VOCAB_SIZE, EMBED_DIM, NUM_CLASS).to(device)
 
-class TextSentiment(nn.Module):
-    def __init__(self, vocab_size, embed_dim, num_class):
-        super().__init__()
-        self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=True)
-        self.fc = nn.Linear(embed_dim, num_class)
-        self.init_weights()
+criterion = torch.nn.CrossEntropyLoss().to(device)
+optimizer = torch.optim.SGD(model.parameters(), lr=4.0)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.9)
 
-    def init_weights(self):
-        initrange = 0.5
-        self.embedding.weight.data.uniform_(-initrange, initrange)
-        self.fc.weight.data.uniform_(-initrange, initrange)
-        self.fc.bias.data.zero_()
-        
-    def forward(self, text, offsets):
-        embedded = self.embedding(text, offsets)
-        return self.fc(embedded)
 
 def generate_batch(batch):
     label = torch.tensor([entry[0] for entry in batch])
@@ -82,19 +78,6 @@ def test(data_):
     return loss / len(data_), acc / len(data_)
 
 def main():
-    N_EPOCHS = 5
-    min_valid_loss = float('inf')
-    VOCAB_SIZE = len(train_dataset.get_vocab())
-    EMBED_DIM = 32
-    NUM_CLASS = len(train_dataset.get_labels())
-
-    model = TextSentiment(VOCAB_SIZE, EMBED_DIM, NUM_CLASS).to(device)
-    print(model)
-
-    criterion = torch.nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=4.0)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.9)
-
     train_len = int(len(train_dataset) * 0.95)
     sub_train_, sub_valid_ = random_split(train_dataset, [train_len, len(train_dataset) - train_len])
 
