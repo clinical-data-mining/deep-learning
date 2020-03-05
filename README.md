@@ -20,7 +20,10 @@ pip install -r requirements.txt
 ### Text classifier
 ```
 Run the entire pipeline
+```
+```
 bash run_classifier.sh
+
 See below for breakdown
 ```
 
@@ -68,7 +71,6 @@ Run on model (defined) above
 Training set size is 532000 
 Validation set size is 28000
 ```
-```
 | Epoch | CPU Time | GPU Time | Train Accuracy | Validation Accuracy |
 | ----- | -------- | -------- | -------------- | ------------------- |
 | 1 | 2 min 11 secs | 0 minutes, 35 secs | 96 | 98 |
@@ -78,7 +80,6 @@ Validation set size is 28000
 | 5 | 1 min 56 secs | 0 minutes, 31 secs | 99.9 | 98.4 |
 
 The performance changes according to the size of model, dataset size etc.
-```
 
  
 ### Notes
