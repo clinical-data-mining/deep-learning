@@ -17,8 +17,15 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
+### Text classifier
+```
+Run the entire pipeline
+bash run_classifier.sh
+See below for breakdown
+```
+
 ### Prepare Data
-DBpedia dataset is parsed with bigrams and saved as `data/train_dataset` and `data/test_dataset`.  
+DBpedia dataset is parsed with bigrams and saved as `data/dbpedia_csv/train_dataset` and `data/dbpedia_csv/test_dataset`.  
 
 To prepare the data, run
 ```
@@ -33,7 +40,10 @@ python train.py
 ```
 
 ### Test Model
-The test script loads the trained model, and attempts to classify a blurb about MSKCC from wikipedia as one of the 14 labels.  
+The test script loads the trained model, and attempts to classify an example paragraph (below) as one of the 14 labels.  
+
+Memorial Sloan Kettering Cancer Center (MSK or MSKCC) is a cancer treatment and research institution in New York City, founded in 1884 as the New York Cancer Hospital. MSKCC is the largest and oldest private cancer center in the world, and is one of 70 National Cancer Institute–designated Comprehensive Cancer Centers. Its main campus is located at 1275 York Avenue, between 67th and 68th Streets, in Manhattan.
+
 Run the `test.py` to see the results.  
 ```
 python test.py
@@ -52,6 +62,25 @@ NaturalPlace -1.5990116596221924
 This is a Building
 ```
 
+### Performance on CPU vs GPU
+```
+Run on model (defined) above
+Training set size is 532000 
+Validation set size is 28000
+```
+```
+| Epoch | CPU Time | GPU Time | Train Accuracy | Validation Accuracy |
+| ----- | -------- | -------- | -------------- | ------------------- |
+| 1 | 2 min 11 secs | 0 minutes, 35 secs | 96 | 98 |
+| 2 | 1 min 56 secs | 0 minutes, 33 secs | 99.0 | 98.2 |
+| 3 | 1 min 56 secs | 0 minutes, 32 secs | 99.6 | 98.3 |
+| 4 | 1 min 56 secs | 0 minutes, 32 secs | 99.8 | 98.3 |
+| 5 | 1 min 56 secs | 0 minutes, 31 secs | 99.9 | 98.4 |
+
+The performance changes according to the size of model, dataset size etc.
+```
+
+ 
 ### Notes
 Check GPU usage by running:
 ```

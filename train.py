@@ -10,23 +10,27 @@ from torch.utils.data.dataset import random_split
 from torch.utils.data import DataLoader
 from model import TextSentiment
 
-train_dataset = pickle.load(open(os.path.join("./data", "train_dataset"), 'rb'))
-test_dataset = pickle.load(open(os.path.join("./data", "test_dataset"), 'rb'))
+train_dataset = pickle.load(open(os.path.join("./data/dbpedia_csv", "train_dataset"), 'rb'))
+test_dataset = pickle.load(open(os.path.join("./data/dbpedia_csv", "test_dataset"), 'rb'))
 
 BATCH_SIZE = 16
 N_EPOCHS = 5
 VOCAB_SIZE = len(train_dataset.get_vocab())
 EMBED_DIM = 32
 NUM_CLASS = len(train_dataset.get_labels())
+HARDWARE = 'GPU'
 
 min_valid_loss = float('inf')
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if HARDWARE == 'GPU'  else "cpu")
 model = TextSentiment(VOCAB_SIZE, EMBED_DIM, NUM_CLASS).to(device)
 
 criterion = torch.nn.CrossEntropyLoss().to(device)
 optimizer = torch.optim.SGD(model.parameters(), lr=4.0)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.9)
 
+print('2. Train on {0} for {1} epochs'.format(HARDWARE, N_EPOCHS))
+print('Loss function is', criterion)
+print('Model is\n', model)
 
 def generate_batch(batch):
     label = torch.tensor([entry[0] for entry in batch])
@@ -95,7 +99,8 @@ def main():
         print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
         print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
 
-    torch.save(model.to('cpu').state_dict(), '/home/rajannaa/pytorch-demo-2/model_ep.pth')
+    print('Save trained model to run on cpu')
+    torch.save(model.to('cpu').state_dict(), 'model_ep.pth')
 
 if __name__ == "__main__" :
     main()

@@ -5,12 +5,15 @@ import torchtext
 from torchtext.datasets import text_classification
 from torchtext.vocab import build_vocab_from_iterator
 import os
+import sys
 NGRAMS = 2
 
 # parse and save dataset
 def prepare_dataset(ngrams):
-    extracted_dir = './data/';
-
+    if os.path.isdir('data/dbpedia_csv') is False:
+        os.system('tar -xf data/dbpedia_csv.tar.gz -C ./data/')
+    
+    extracted_dir = './data/dbpedia_csv';
     vocab = None
     train_csv_path = os.path.join(extracted_dir, 'train.csv')
     test_csv_path = os.path.join(extracted_dir, 'test.csv')
@@ -34,7 +37,8 @@ def prepare_dataset(ngrams):
     train_dataset = text_classification.TextClassificationDataset(vocab, train_data, train_labels)
     test_dataset = text_classification.TextClassificationDataset(vocab, test_data, test_labels)
  
-    pickle.dump(train_dataset, open(os.path.join("data/", "train_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
-    pickle.dump(test_dataset, open(os.path.join("data/", "test_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
+    pickle.dump(train_dataset, open(os.path.join(extracted_dir, "train_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
+    pickle.dump(test_dataset, open(os.path.join(extracted_dir, "test_dataset"), 'wb'), pickle.HIGHEST_PROTOCOL)
 
+print('1. Prepare dataset')
 prepare_dataset(NGRAMS)

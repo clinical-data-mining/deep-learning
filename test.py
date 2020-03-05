@@ -21,17 +21,20 @@ def predict(text, model, vocab, ngrams, label_map):
         return output.argmax(1).item() + 1
 
 def main():
-    train_dataset = pickle.load(open(os.path.join("./data", "train_dataset"), 'rb'))
+    print('3. Predict on new test example')
+    train_dataset = pickle.load(open(os.path.join("./data/dbpedia_csv", "train_dataset"), 'rb'))
     VOCAB_SIZE = len(train_dataset.get_vocab())
     EMBED_DIM = 32
     NUM_CLASS = len(train_dataset.get_labels())
     model = TextSentiment(VOCAB_SIZE, EMBED_DIM, NUM_CLASS)
     label = {1 : "Company", 2 : "EducationalInstitution", 3 : "Artist", 4 : "Athlete", 5 : "OfficeHolder", 6 : "MeanOfTransportation", 7 : "Building", 8 : "NaturalPlace", 9 : "Village", 10 : "Animal", 11 : "Plant", 12 : "Album", 13 : "Film", 14 : "WrittenWork"}
 
+    print('Classes the model has learned on are\n', label)
+
     model.load_state_dict(torch.load("./model_ep.pth"))
     model.eval()
     model = model.to("cpu")
-    print(model)
+    print('Test model', model)
     ex_text_str = "Memorial Sloan Kettering Cancer Center (MSK or MSKCC) is a cancer treatment and research institution in New York City, founded in 1884 as the New York Cancer Hospital. MSKCC is the largest and oldest private cancer center in the world, and is one of 70 National Cancer Institute–designated Comprehensive Cancer Centers. Its main campus is located at 1275 York Avenue, between 67th and 68th Streets, in Manhattan."
 
     vocab = train_dataset.get_vocab()
